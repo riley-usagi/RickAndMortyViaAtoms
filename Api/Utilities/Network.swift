@@ -12,7 +12,7 @@ import Foundation
     let data      = try await URLSession.shared.data(from: url).0
     let response  = try JSONDecoder().decode(CharacterResponse.self, from: data)
     
-    return response.results
+    return response.results ?? []
   }
   
 }

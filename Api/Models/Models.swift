@@ -1,8 +1,8 @@
 import Foundation
 
 struct CharacterResponse: Codable {
-  let info: Info
-  let results: [Character]
+//  let info: Info
+  let results: [Character]?
 }
 
 struct Info: Codable {
