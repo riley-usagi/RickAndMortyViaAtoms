@@ -5,9 +5,7 @@ struct ContentView: View {
   
   @WatchState(ActionAtom()) var action: ActionAtom.ActionEnum
   
-  //  @Watch(CharactersAtom()) var charactersAtom: Task<[Character], Never>
-  
-  @WatchStateObject(CharactersObjectAtom()) var storage: CharactersObject
+  @WatchStateObject(CharactersObjectAtom()) var charactersObject: CharactersObject
   
   @State private var searchText: String = ""
   
@@ -16,12 +14,12 @@ struct ContentView: View {
       
       VStack {
         
-        // For example: Rick or Morty
+        // For example: Rick or Morty or Smith
         TextField("Search Character by name", text: $searchText)
           .textFieldStyle(RoundedBorderTextFieldStyle())
           .padding()
         
-        List(storage.characters) { character in
+        List(charactersObject.characters) { character in
           VStack(alignment: .leading) {
             Text(character.name)
               .font(.headline)
@@ -37,9 +35,7 @@ struct ContentView: View {
     }
     
     .onChange(of: searchText) { _, newValue in
-//      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-        action = .requestByName(newValue)
-//      }
+      action = .requestByName(newValue)
     }
   }
 }
