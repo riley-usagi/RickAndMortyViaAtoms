@@ -1,6 +1,17 @@
+import Atoms
 import Foundation
 
-@MainActor class NetworkUtility: ObservableObject {
+struct FetchCharactersAtom: ThrowingTaskAtom, Hashable {
+  
+  let name: String
+  
+  func value(context: Context) async throws -> [Character] {
+    do {
+      return try await fetchCharacters(name: name)
+    } catch {
+      throw error
+    }
+  }
   
   func fetchCharacters(name: String) async throws -> [Character] {
     let urlString = "https://rickandmortyapi.com/api/character/?name=\(name)&status=alive"
@@ -14,5 +25,4 @@ import Foundation
     
     return response.results
   }
-  
 }

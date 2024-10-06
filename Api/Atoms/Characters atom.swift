@@ -1,35 +1,11 @@
 import Atoms
 import Foundation
 
-/// Characters list
-struct CharactersAtom: TaskAtom, Hashable {
-  
-  func value(context: Context) async -> [Character] {
+struct CharactersPhaseAtom: ValueAtom, Hashable {
+  func value(context: Context) -> AsyncPhase<[Character], any Error> {
     
-    /// Initial value
-    var characters: [Character] = []
+    let name = context.watch(RequestAtom())
     
-    /// Current action
-    let action  = context.watch(ActionAtom())
-    
-    /// Network methods
-    let network = context.watch(NetworkAtom())
-    
-    switch action {
-      
-    case .initial:
-      return characters
-      
-    case let .requestByName(name):
-      return await Task {
-        do {
-          characters = try await network.fetchCharacters(name: name)
-        } catch {
-          print("Error fetching characters: \(error)")
-        }
-        
-        return characters
-      }.value
-    }
+    return context.watch(FetchCharactersAtom(name: name).phase)
   }
 }

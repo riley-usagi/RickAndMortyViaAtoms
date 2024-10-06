@@ -3,9 +3,9 @@ import SwiftUI
 
 struct ContentView: View {
   
-  @WatchState(ActionAtom()) var action: ActionAtom.ActionEnum
+  @Watch(CharactersPhaseAtom()) var charactersPhase
   
-  @Watch(CharactersAtom()) var charactersAtom: Task<[Character], Never>
+  @WatchState(RequestAtom()) var request
   
   @State private var searchText: String = ""
   
@@ -15,32 +15,26 @@ struct ContentView: View {
       VStack {
         
         // For example: Rick or Morty
-        TextField("Search Character by name", text: $searchText)
-        .textFieldStyle(RoundedBorderTextFieldStyle())
-        .padding()
+        TextField("Search Character by name", text: $request)
+          .textFieldStyle(RoundedBorderTextFieldStyle())
+          .padding()
         
-        Suspense(charactersAtom) { receivedCharacters in
-          List(receivedCharacters) { character in
-            VStack(alignment: .leading) {
-              Text(character.name)
-                .font(.headline)
-              Text(character.species)
-                .font(.subheadline)
+        Group {
+          if case let .success(receivedCharacters) = charactersPhase {
+            List(receivedCharacters) { character in
+              VStack(alignment: .leading) {
+                Text(character.name)
+                  .font(.headline)
+                Text(character.species)
+                  .font(.subheadline)
+              }
             }
+            .listStyle(PlainListStyle())
           }
-          .listStyle(PlainListStyle())
-        } suspending: {
-          ProgressView()
         }
       }
       .navigationTitle("Characters")
       
-    }
-    
-    .onChange(of: searchText) { _, newValue in
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-        action = .requestByName(newValue)
-      }
     }
   }
 }
